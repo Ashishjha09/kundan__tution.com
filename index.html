@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tuition Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <h1>Tuition Login</h1>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <select id="role">
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button onclick="login()">Login</button>
+        </div>
+
+        <!-- Student Dashboard -->
+        <div id="studentSection" class="admin-section hidden">
+            <h1>Student Dashboard</h1>
+            <div id="studentProfile"></div>
+            <h2>Fee Status</h2>
+            <table id="studentFeesTable">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Year</th>
+                        <th>Due Date</th>
+                        <th>Paid Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button onclick="logout()" class="danger" style="width: auto; margin-top: 20px;">Logout</button>
+        </div>
+
+        <!-- Admin Dashboard -->
+<div id="adminSection" class="admin-layout hidden">
+            <nav class="sidebar">
+                <div class="sidebar-header">
+                    <h3>Admin Panel</h3>
+                </div>
+                <button class="nav-item active" data-section="dashboardSection" onclick="showSection('dashboardSection')">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </button>
+                <button class="nav-item" data-section="studentsSection" onclick="showSection('studentsSection')">
+                    <i class="fas fa-users"></i> Students
+                </button>
+                <button class="nav-item" data-section="feesSection" onclick="showSection('feesSection')">
+                    <i class="fas fa-money-bill-wave"></i> Fees
+                </button>
+            </nav>
+            <div class="main-content">
+                <header class="admin-header">
+                    <h1>Welcome Admin</h1>
+                    <button onclick="logout()" class="logout-btn danger">Logout</button>
+                </header>
+
+                <!-- Dashboard Section -->
+                <div id="dashboardSection" class="content-section">
+                    <div class="dashboard" id="adminStats"></div>
+                </div>
+
+                <!-- Students Section -->
+                <div id="studentsSection" class="content-section hidden">
+                    <h2>Students</h2>
+                    <button onclick="openAddStudentModal()">+ Add Student</button>
+                    <table id="studentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Fees</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- Fees Section -->
+                <div id="feesSection" class="content-section hidden">
+                    <h2>Fees Management</h2>
+                    <button onclick="openAddFeeModal()">+ Add Fee</button>
+                    <table id="feesTable">
+                        <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Month</th>
+                                <th>Year</th>
+                                <th>Due Date</th>
+                                <th>Paid Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            </header>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addStudentModal')">&times;</span>
+            <h2>Add Student</h2>
+            <input type="text" id="addName" placeholder="Name">
+            <input type="tel" id="addMobile" placeholder="Mobile No">
+            <input type="email" id="addEmail" placeholder="Email">
+            <input type="text" id="addClass" placeholder="Class">
+            <input type="text" id="addStudentId" placeholder="Student ID">
+            <input type="number" id="addFees" placeholder="Monthly Fees">
+            <input type="text" id="addUserId" placeholder="User ID">
+            <input type="password" id="addPassword" placeholder="Password">
+            <button onclick="addStudent()">Save</button>
+        </div>
+    </div>
+
+    <!-- View/Edit Student Modal -->
+    <div id="viewStudentModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('viewStudentModal')">&times;</span>
+            <h2 id="viewStudentTitle">Student Details</h2>
+            <div id="viewStudentDetails"></div>
+            <div id="studentActions" class="actions hidden">
+                <button onclick="editStudent(currentStudentId)" class="btn-primary">Edit</button>
+                <button onclick="deleteStudent(currentStudentId)" class="danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Student Modal -->
+    <div id="editStudentModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('editStudentModal')">&times;</span>
+            <h2>Edit Student</h2>
+            <input type="text" id="editName" placeholder="Name">
+            <input type="email" id="editEmail" placeholder="Email">
+            <input type="text" id="editClass" placeholder="Class">
+            <input type="number" id="editFees" placeholder="Monthly Fees">
+            <input type="password" id="editPassword" placeholder="Password (optional)">
+            <button onclick="closeModal('editStudentModal')" class="cancel-btn">Cancel</button>
+            <button onclick="saveEditStudent()" class="update-btn">Update</button>
+
+        </div>
+    </div>
+
+    <!-- Add Fee Modal -->
+    <div id="addFeeModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addFeeModal')">&times;</span>
+<h2>Add Fee</h2>
+            <label for="addFeeStudent">Student:</label>
+            <select id="addFeeStudent">
+                <option value="">Select Student</option>
+            </select>
+            <label for="addFeeMonth">Month & Year <span style="color:red;">*</span>:</label>
+            <input type="month" id="addFeeMonth" placeholder="Select Month & Year (e.g., 2024-01)">
+            <label for="addFeeDueDate">Due Date <span style="color:red;">*</span>:</label>
+            <input type="date" id="addFeeDueDate" placeholder="Due Date (Required)">
+            <label for="addFeePaidDate">Paid Date:</label>
+            <input type="date" id="addFeePaidDate" placeholder="Paid Date (leave blank if unpaid)">
+            <label for="addFeeStatus">Status <span style="color:red;">*</span>:</label>
+            <select id="addFeeStatus">
+                <option value="unpaid">Unpaid</option>
+                <option value="paid">Paid</option>
+            </select>
+            <label for="addFeeAmount">Amount (₹):</label>
+            <input type="number" id="addFeeAmount" placeholder="Amount">
+            <button onclick="addFee()">Save Fee</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+    
+    <script src="script.js"></script>
+</body>
+</html>
+
